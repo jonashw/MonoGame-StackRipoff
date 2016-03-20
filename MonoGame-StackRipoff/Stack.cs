@@ -12,7 +12,7 @@ namespace MonoGame_StackRipoff
         public Stack(uint startingPrisms)
         {
             _prisms = Enumerable.Range(0, (int)startingPrisms)
-                .Select(i => RectangularPrismFactory.MakeStandard(new Vector3(0, i, 0)))
+                .Select(i => RectangularPrismFactory.MakeStandard(new Vector3(0, i * RectangularPrismFactory.TileHeight, 0)))
                 .ToList();
         }
 
@@ -32,7 +32,11 @@ namespace MonoGame_StackRipoff
 
         public RectangularPrism CreateNextUnboundPrism()
         {
-            return RectangularPrismFactory.MakeStandard(new Vector3(0, _prisms.Count, 0));
+            return RectangularPrismFactory.MakeStandard(
+                new Vector3(
+                    0,
+                    _prisms.Count*RectangularPrismFactory.TileHeight,
+                    0));
         }
     }
 }

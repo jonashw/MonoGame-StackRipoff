@@ -4,37 +4,15 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoGame_StackRipoff
 {
-    public class RectangularPrism
-    {
-        public readonly VertexPositionNormalTexture[] Vertices;
-        public Vector3 Position;
-
-        public Matrix WorldMatrix
-        {
-            get { return Matrix.CreateTranslation(Position); }
-        }
-
-        public RectangularPrism(VertexPositionNormalTexture[] vertices, Vector3 position)
-        {
-            Vertices = vertices;
-            Position = position;
-        }
-
-        public RectangularPrism(VertexPositionNormalTexture[] vertices)
-        {
-            Vertices = vertices;
-        }
-    }
-
     public static class RectangularPrismFactory
     {
+        public const int TileHeight = 2;
         public static RectangularPrism MakeStandard(Vector3 position)
         {
-            return new RectangularPrism(Create(new Size3(10, 1, 10)), position);
-        }
-        public static RectangularPrism Make(Size3 size)
-        {
-            return new RectangularPrism(Create(size));
+            return new RectangularPrism(Create(new Size3(10, TileHeight, 10)), position)
+            {
+                Color = SceneColors.NextPrismColor()
+            };
         }
 
         public static VertexPositionNormalTexture[] Create(Size3 size)

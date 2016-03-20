@@ -14,9 +14,10 @@ namespace MonoGame_StackRipoff
         private readonly KeyboardEvents _keyboard = new KeyboardEvents();
         private BasicEffect _basicEffect;
 
-        private readonly Stack _stack = new Stack(3);
+        private const int StartingPrismCount = 3;
+        private readonly Stack _stack = new Stack(StartingPrismCount);
         private readonly PrismBouncer _bouncer = new PrismBouncer(
-            RectangularPrismFactory.MakeStandard(new Vector3(0, 3, 0)),
+            RectangularPrismFactory.MakeStandard(new Vector3(0, StartingPrismCount * RectangularPrismFactory.TileHeight, 0)),
             24);
 
         private static float _cameraY = -5f;
@@ -110,6 +111,7 @@ namespace MonoGame_StackRipoff
         private void drawPrism(RectangularPrism prism)
         {
             _basicEffect.World = prism.WorldMatrix;
+            _basicEffect.DiffuseColor = prism.Color.ToVector3();
             foreach (var pass in _basicEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
