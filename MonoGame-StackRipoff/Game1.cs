@@ -54,9 +54,6 @@ namespace MonoGame_StackRipoff
                     _cameraAnimator.Reset(_cameraY);
                 });
 
-            _keyboard.OnPress(Keys.F,
-                () => _stack.Pop());
-
             base.Initialize();
         }
 

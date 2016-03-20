@@ -45,6 +45,7 @@
     <Compile Include="Game1.cs" />
     <Compile Include="KeyboardEvents.cs" />
     <Compile Include="PrismBouncer.cs" />
+    <Compile Include="PrismPlayResult.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectangularPrism.cs" />

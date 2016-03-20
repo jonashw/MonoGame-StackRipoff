@@ -30,13 +30,9 @@ namespace MonoGame_StackRipoff
             _prisms.Add(prism);
         }
 
-        public void Pop()
+        public static PrismPlayResult TryPlace(RectangularPrism prism, RectangularPrism ontoPrism)
         {
-            if (_prisms.Count == 0)
-            {
-                return;
-            }
-            _prisms.RemoveAt(_prisms.Count - 1);
+            return new PrismPlayResult.PerfectLanding();
         }
 
         public RectangularPrism CreateNextUnboundPrism()
