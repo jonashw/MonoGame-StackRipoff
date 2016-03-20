@@ -9,17 +9,22 @@ namespace MonoGame_StackRipoff
         public const int TileHeight = 2;
         public static RectangularPrism MakeStandard(Vector3 position)
         {
-            return new RectangularPrism(Create(new Size3(10, TileHeight, 10)), position)
-            {
-                Color = SceneColors.NextPrismColor()
-            };
+            return new RectangularPrism(
+                Create(new Size3(10, TileHeight, 10)),
+                position,
+                SceneColors.NextPrismColor());
+        }
+
+        public static RectangularPrism Make(Size3 size, Vector3 position, Color color)
+        {
+            return new RectangularPrism(Create(size), position, color);
         }
 
         public static VertexPositionNormalTexture[] Create(Size3 size)
         {
-            var x = size.X/2f;
-            var y = size.Y/2f;
-            var z = size.Z/2f;
+            var x = size.X/2;
+            var y = size.Y/2;
+            var z = size.Z/2;
 
             var mainVertices = new Vector3[8];
             mainVertices[0] = new Vector3(-x, y, z);//Front Top    Left

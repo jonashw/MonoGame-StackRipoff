@@ -7,22 +7,24 @@ namespace MonoGame_StackRipoff
     {
         public readonly VertexPositionNormalTexture[] Vertices;
         public Vector3 Position;
-        public Color Color;
+        public readonly Color Color;
 
         public Matrix WorldMatrix
         {
             get { return Matrix.CreateTranslation(Position); }
         }
 
-        public RectangularPrism(VertexPositionNormalTexture[] vertices, Vector3 position)
+        public RectangularPrism(VertexPositionNormalTexture[] vertices, Vector3 position, Color color)
         {
             Vertices = vertices;
             Position = position;
+            Color = color;
         }
 
-        public RectangularPrism(VertexPositionNormalTexture[] vertices)
+        public RectangularPrism(VertexPositionNormalTexture[] vertices, Color color)
         {
             Vertices = vertices;
+            Color = color;
         }
     }
 }

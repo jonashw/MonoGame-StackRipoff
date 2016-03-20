@@ -7,6 +7,8 @@ namespace MonoGame_StackRipoff
     public class Game1 : Game
     {
         private readonly GraphicsDeviceManager _graphics;
+        private SpriteFont _font;
+        private SpriteBatch _spriteBatch;
         private readonly RasterizerState _rasterizerState = new RasterizerState
         {
             CullMode = CullMode.CullClockwiseFace
@@ -21,11 +23,12 @@ namespace MonoGame_StackRipoff
             24);
 
         private static float _cameraY = -5f;
+
         private readonly Animator _cameraAnimator = new Animator(
             Easing.CubicOut,
             -3f,
             val => _cameraY = val,
-            -1f,
+            - RectangularPrismFactory.TileHeight,
             1);
 
         public Game1()
@@ -59,6 +62,8 @@ namespace MonoGame_StackRipoff
 
         protected override void LoadContent()
         {
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _font = Content.Load<SpriteFont>("Century Gothic");
             _basicEffect = new BasicEffect(GraphicsDevice)
             {
                 AmbientLightColor = Vector3.One,
@@ -104,6 +109,17 @@ namespace MonoGame_StackRipoff
                 drawPrism(prism);
             }
             drawPrism(_bouncer.Prism);
+
+            _spriteBatch.Begin();
+            var score = _stack.Score.ToString();
+            
+            
+            _spriteBatch.DrawString(
+                _font,
+                score,
+                new Vector2((GraphicsDevice.Viewport.Width - _font.MeasureString(score).X)/2, 0),
+                Color.White);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }

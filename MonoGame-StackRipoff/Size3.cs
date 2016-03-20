@@ -1,16 +1,18 @@
-﻿namespace MonoGame_StackRipoff
+﻿using System;
+
+namespace MonoGame_StackRipoff
 {
     public struct Size3
     {
-        public readonly uint X;
-        public readonly uint Y;
-        public readonly uint Z;
+        public readonly float X;
+        public readonly float Y;
+        public readonly float Z;
 
-        public Size3(uint x, uint y, uint z)
+        public Size3(float x, float y, float z)
         {
-            X = x;
-            Y = y;
-            Z = z;
+            X = Math.Abs(x);
+            Y = Math.Abs(y);
+            Z = Math.Abs(z);
         }
     }
 }
