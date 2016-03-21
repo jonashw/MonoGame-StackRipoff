@@ -2,13 +2,20 @@
 
 namespace MonoGame_StackRipoff
 {
-    public abstract class PrismPlayResult
+    public abstract class PrismOverlapResult
     {
         public abstract void Do(Action<PerfectLanding> perfectAction, Action<TotalMiss> totalMissAction, Action<Mixed> mixedAction);
         public abstract T Match<T>(Func<PerfectLanding,T> perfectFunc, Func<TotalMiss,T> totalMissFunc, Func<Mixed,T> mixedFunc);
 
-        public class PerfectLanding : PrismPlayResult
+        public class PerfectLanding : PrismOverlapResult
         {
+            public readonly RectangularPrism Landed;
+
+            public PerfectLanding(RectangularPrism landed)
+            {
+                Landed = landed;
+            }
+
             public override void Do(Action<PerfectLanding> perfectAction, Action<TotalMiss> totalMissAction,
                 Action<Mixed> mixedAction)
             {
@@ -21,7 +28,7 @@ namespace MonoGame_StackRipoff
                 return perfectFunc(this);
             }
         }
-        public class TotalMiss : PrismPlayResult
+        public class TotalMiss : PrismOverlapResult
         {
             public override void Do(Action<PerfectLanding> perfectAction, Action<TotalMiss> totalMissAction,
                 Action<Mixed> mixedAction)
@@ -35,7 +42,7 @@ namespace MonoGame_StackRipoff
                 return totalMissFunc(this);
             }
         }
-        public class Mixed : PrismPlayResult
+        public class Mixed : PrismOverlapResult
         {
             public readonly RectangularPrism Missed;
             public readonly RectangularPrism Landed;

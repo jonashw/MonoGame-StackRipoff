@@ -46,7 +46,7 @@
     <Compile Include="KeyboardEvents.cs" />
     <Compile Include="PrismBounceAxis.cs" />
     <Compile Include="PrismBouncer.cs" />
-    <Compile Include="PrismPlayResult.cs" />
+    <Compile Include="PrismOverlapResult.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectangularPrism.cs" />

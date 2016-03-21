@@ -50,7 +50,7 @@ namespace MonoGame_StackRipoff
                     _bouncer.Prism.OverlapWith(_stack.Top, _bouncer.CurrentAxis).Do(
                         perfect =>
                         {
-                            _stack.Push(_bouncer.Prism);
+                            _stack.Push(perfect.Landed);
                             _cameraAnimator.Reset(_cameraY);
                         },
                         totalMiss => { },

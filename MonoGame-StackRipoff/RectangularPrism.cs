@@ -1,10 +1,13 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoGame_StackRipoff
 {
     public class RectangularPrism
     {
+        public const float PerfectPlayTolerance = 0.5f;
+
         public readonly VertexPositionNormalTexture[] Vertices;
         public readonly Size3 Size;
         public Vector3 Position;
@@ -48,113 +51,119 @@ namespace MonoGame_StackRipoff
             Size = size;
         }
 
-        public PrismPlayResult OverlapWith(RectangularPrism other, PrismBounceAxis prismBounceAxis)
+        public PrismOverlapResult OverlapWith(RectangularPrism other, PrismBounceAxis prismBounceAxis)
         {
-            switch (prismBounceAxis)
+            if (prismBounceAxis == PrismBounceAxis.X)
             {
-                case PrismBounceAxis.X:
-                    if (Left < other.Left && Right <= other.Left)
-                    {
-                        return new PrismPlayResult.TotalMiss();
-                    }
-                    if (other.Right < Right && other.Right <= Left)
-                    {
-                        return new PrismPlayResult.TotalMiss();
-                    }
-                    if (Left < other.Left)
-                    {
-                        var hangerSize = new Size3(
-                            other.Left - Left,
-                            RectangularPrismFactory.TileHeight,
-                            Size.Z);
-                        var landedSize = new Size3(
-                            Size.X - hangerSize.X,
-                            RectangularPrismFactory.TileHeight,
-                            Size.Z);
-                        return new PrismPlayResult.Mixed(
-                            RectangularPrismFactory.Make(
-                                hangerSize,
-                                new Vector3(Left + hangerSize.X / 2f, Position.Y, Position.Z),
-                                Color),
-                            RectangularPrismFactory.Make(
-                                landedSize,
-                                new Vector3(Position.X + hangerSize.X / 2f, Position.Y, Position.Z),
-                                Color));
-                    }
-                    if (other.Right < Right)
-                    {
-                        var hangerSize = new Size3(
-                            Right - other.Right,
-                            RectangularPrismFactory.TileHeight,
-                            Size.Z);
-                        var landedSize = new Size3(
-                            Size.X - hangerSize.X,
-                            RectangularPrismFactory.TileHeight,
-                            Size.Z);
-                        return new PrismPlayResult.Mixed(
-                            RectangularPrismFactory.Make(
-                                hangerSize,
-                                new Vector3(Right - hangerSize.X / 2f, Position.Y, Position.Z),
-                                Color),
-                            RectangularPrismFactory.Make(
-                                landedSize,
-                                new Vector3(Position.X - hangerSize.X / 2f, Position.Y, Position.Z),
-                                Color));
-                    }
-                    return new PrismPlayResult.PerfectLanding();
-                case PrismBounceAxis.Z:
-                    if (Front < other.Front && Front <= other.Back)
-                    {
-                        return new PrismPlayResult.TotalMiss();
-                    }
-                    if (other.Front < Front && other.Front <= Back)
-                    {
-                        return new PrismPlayResult.TotalMiss();
-                    }
-                    if (other.Front < Front)
-                    {
-                        var hangerSize = new Size3(
-                            Size.X,
-                            RectangularPrismFactory.TileHeight,
-                            Front - other.Front);
-                        var landedSize = new Size3(
-                            Size.X,
-                            RectangularPrismFactory.TileHeight,
-                            Size.Z - hangerSize.Z);
-                        return new PrismPlayResult.Mixed(
-                            RectangularPrismFactory.Make(
-                                hangerSize,
-                                new Vector3(Position.X, Position.Y, Front - hangerSize.Z / 2f),
-                                Color),
-                            RectangularPrismFactory.Make(
-                                landedSize,
-                                new Vector3(Position.X, Position.Y, Position.Z - hangerSize.Z / 2f),
-                                Color));
-                    }
-                    if (Back < other.Back)
-                    {
-                        var hangerSize = new Size3(
-                            Size.X,
-                            RectangularPrismFactory.TileHeight,
-                            other.Back - Back);
-                        var landedSize = new Size3(
-                            Size.X,
-                            RectangularPrismFactory.TileHeight,
-                            Size.Z - hangerSize.Z);
-                        return new PrismPlayResult.Mixed(
-                            RectangularPrismFactory.Make(
-                                hangerSize,
-                                new Vector3(Position.X, Position.Y, Back + hangerSize.Z/2f),
-                                Color),
-                            RectangularPrismFactory.Make(
-                                landedSize,
-                                new Vector3(Position.X, Position.Y, Position.Z + hangerSize.Z/2f),
-                                Color));
-                    }
-                    break;
+                if (Math.Abs(Right - other.Right) <= PerfectPlayTolerance)
+                {
+                    return new PrismOverlapResult.PerfectLanding(
+                        copyWithPosition(new Vector3(other.Position.X, Position.Y, Position.Z)));
+                }
+                if (Left < other.Left && Right <= other.Left)
+                {
+                    return new PrismOverlapResult.TotalMiss();
+                }
+                if (other.Right < Right && other.Right <= Left)
+                {
+                    return new PrismOverlapResult.TotalMiss();
+                }
+                if (Left < other.Left)
+                {
+                    var hangerSize = new Size3(
+                        other.Left - Left,
+                        RectangularPrismFactory.TileHeight,
+                        Size.Z);
+                    var landedSize = new Size3(
+                        Size.X - hangerSize.X,
+                        RectangularPrismFactory.TileHeight,
+                        Size.Z);
+                    return new PrismOverlapResult.Mixed(
+                        RectangularPrismFactory.Make(
+                            hangerSize,
+                            new Vector3(Left + hangerSize.X / 2f, Position.Y, Position.Z),
+                            Color),
+                        RectangularPrismFactory.Make(
+                            landedSize,
+                            new Vector3(Position.X + hangerSize.X / 2f, Position.Y, Position.Z),
+                            Color));
+                } else {
+                    var hangerSize = new Size3(
+                        Right - other.Right,
+                        RectangularPrismFactory.TileHeight,
+                        Size.Z);
+                    var landedSize = new Size3(
+                        Size.X - hangerSize.X,
+                        RectangularPrismFactory.TileHeight,
+                        Size.Z);
+                    return new PrismOverlapResult.Mixed(
+                        RectangularPrismFactory.Make(
+                            hangerSize,
+                            new Vector3(Right - hangerSize.X / 2f, Position.Y, Position.Z),
+                            Color),
+                        RectangularPrismFactory.Make(
+                            landedSize,
+                            new Vector3(Position.X - hangerSize.X / 2f, Position.Y, Position.Z),
+                            Color));
+                }
             }
-            return new PrismPlayResult.PerfectLanding();
+            //Front/Back
+            if (Math.Abs(Front - other.Front) <= PerfectPlayTolerance)
+            {
+                return new PrismOverlapResult.PerfectLanding(
+                    copyWithPosition(new Vector3(Position.X, Position.Y, other.Position.Z)));
+            }
+            if (Front < other.Front && Front <= other.Back)
+            {
+                return new PrismOverlapResult.TotalMiss();
+            }
+            if (other.Front < Front && other.Front <= Back)
+            {
+                return new PrismOverlapResult.TotalMiss();
+            }
+            if (other.Front < Front)
+            {
+                var hangerSize = new Size3(
+                    Size.X,
+                    RectangularPrismFactory.TileHeight,
+                    Front - other.Front);
+                var landedSize = new Size3(
+                    Size.X,
+                    RectangularPrismFactory.TileHeight,
+                    Size.Z - hangerSize.Z);
+                return new PrismOverlapResult.Mixed(
+                    RectangularPrismFactory.Make(
+                        hangerSize,
+                        new Vector3(Position.X, Position.Y, Front - hangerSize.Z / 2f),
+                        Color),
+                    RectangularPrismFactory.Make(
+                        landedSize,
+                        new Vector3(Position.X, Position.Y, Position.Z - hangerSize.Z / 2f),
+                        Color));
+            } else {
+                var hangerSize = new Size3(
+                    Size.X,
+                    RectangularPrismFactory.TileHeight,
+                    other.Back - Back);
+                var landedSize = new Size3(
+                    Size.X,
+                    RectangularPrismFactory.TileHeight,
+                    Size.Z - hangerSize.Z);
+                return new PrismOverlapResult.Mixed(
+                    RectangularPrismFactory.Make(
+                        hangerSize,
+                        new Vector3(Position.X, Position.Y, Back + hangerSize.Z/2f),
+                        Color),
+                    RectangularPrismFactory.Make(
+                        landedSize,
+                        new Vector3(Position.X, Position.Y, Position.Z + hangerSize.Z/2f),
+                            Color));
+            }
         }
 
+        private RectangularPrism copyWithPosition(Vector3 position)
+        {
+            return new RectangularPrism(Vertices, position, Color, Size);
+        }
     }
 }

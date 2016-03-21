@@ -17,6 +17,42 @@ namespace UnitTests
         }
 
         [Test]
+        public void PerfectWithinToleranceRight()
+        {
+            var r1 = RectangularPrismFactory.MakeStandard(new Vector3(RectangularPrism.PerfectPlayTolerance,0,0));
+            var r2 = RectangularPrismFactory.MakeStandard(new Vector3());
+            var result = r1.OverlapWith(r2, PrismBounceAxis.X);
+            assertResultType(result, ResultType.Perfect);
+        }
+
+        [Test]
+        public void PerfectWithinToleranceLeft()
+        {
+            var r1 = RectangularPrismFactory.MakeStandard(new Vector3(-RectangularPrism.PerfectPlayTolerance,0,0));
+            var r2 = RectangularPrismFactory.MakeStandard(new Vector3());
+            var result = r1.OverlapWith(r2, PrismBounceAxis.X);
+            assertResultType(result, ResultType.Perfect);
+        }
+
+        [Test]
+        public void PerfectWithinToleranceFront()
+        {
+            var r1 = RectangularPrismFactory.MakeStandard(new Vector3(0,0,RectangularPrism.PerfectPlayTolerance));
+            var r2 = RectangularPrismFactory.MakeStandard(new Vector3());
+            var result = r1.OverlapWith(r2, PrismBounceAxis.Z);
+            assertResultType(result, ResultType.Perfect);
+        }
+
+        [Test]
+        public void PerfectWithinToleranceBack()
+        {
+            var r1 = RectangularPrismFactory.MakeStandard(new Vector3(0,0,-RectangularPrism.PerfectPlayTolerance));
+            var r2 = RectangularPrismFactory.MakeStandard(new Vector3());
+            var result = r1.OverlapWith(r2, PrismBounceAxis.Z);
+            assertResultType(result, ResultType.Perfect);
+        }
+
+        [Test]
         public void TotalMissLeft()
         {
             var r1 = RectangularPrismFactory.Make(new Size3(1,1,1), new Vector3(-1,0,0), Color.White);
@@ -128,7 +164,7 @@ namespace UnitTests
                 });
         }
 
-        private static void assertResultType(PrismPlayResult result, ResultType expectedType)
+        private static void assertResultType(PrismOverlapResult result, ResultType expectedType)
         {
             var type = result.Match(
                 perfect => ResultType.Perfect,
