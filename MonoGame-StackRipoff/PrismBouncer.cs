@@ -10,6 +10,11 @@ namespace MonoGame_StackRipoff
 
         private bool _usingX = true;
 
+        public PrismBounceAxis CurrentAxis
+        {
+            get { return _usingX ? PrismBounceAxis.X : PrismBounceAxis.Z; }
+        }
+
         public void ToggleDirection()
         {
             _usingX = !_usingX;

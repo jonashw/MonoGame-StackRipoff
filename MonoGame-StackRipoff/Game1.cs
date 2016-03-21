@@ -47,11 +47,21 @@ namespace MonoGame_StackRipoff
             _keyboard.OnPress(Keys.Space,
                 () =>
                 {
-                    _stack.Push(_bouncer.Prism);
+                    _bouncer.Prism.OverlapWith(_stack.Top, _bouncer.CurrentAxis).Do(
+                        perfect =>
+                        {
+                            _stack.Push(_bouncer.Prism);
+                            _cameraAnimator.Reset(_cameraY);
+                        },
+                        totalMiss => { },
+                        mixed =>
+                        {
+                            _stack.Push(mixed.Landed);
+                            _cameraAnimator.Reset(_cameraY);
+                        });
                     _bouncer.Prism = _stack.CreateNextUnboundPrism();
                     _bouncer.Reset();
                     _bouncer.ToggleDirection();
-                    _cameraAnimator.Reset(_cameraY);
                 });
 
             base.Initialize();

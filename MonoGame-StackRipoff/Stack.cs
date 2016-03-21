@@ -19,10 +19,15 @@ namespace MonoGame_StackRipoff
 
         public Stack(int startingPrisms)
         {
-            _startingPrisms = Math.Max(0, startingPrisms);
+            _startingPrisms = Math.Max(1, startingPrisms);
             _prisms = Enumerable.Range(0, _startingPrisms)
                 .Select(i => RectangularPrismFactory.MakeStandard(new Vector3(0, i * RectangularPrismFactory.TileHeight, 0)))
                 .ToList();
+        }
+
+        public RectangularPrism Top
+        {
+            get { return _prisms.Last(); }
         }
 
         public void Push(RectangularPrism prism)
@@ -30,18 +35,16 @@ namespace MonoGame_StackRipoff
             _prisms.Add(prism);
         }
 
-        public static PrismPlayResult TryPlace(RectangularPrism prism, RectangularPrism ontoPrism)
-        {
-            return new PrismPlayResult.PerfectLanding();
-        }
-
         public RectangularPrism CreateNextUnboundPrism()
         {
-            return RectangularPrismFactory.MakeStandard(
+            var top = Top;
+            return RectangularPrismFactory.Make(
+                new Size3(top.Size.X, top.Size.Y, top.Size.Z),
                 new Vector3(
-                    0,
+                    top.Position.X,
                     _prisms.Count*RectangularPrismFactory.TileHeight,
-                    0));
+                    top.Position.Z),
+                SceneColors.NextPrismColor());
         }
     }
 }
