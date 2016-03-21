@@ -7,9 +7,10 @@ namespace MonoGame_StackRipoff
     public class RectangularPrism
     {
         public const float PerfectPlayTolerance = 0.5f;
-
-        public readonly VertexPositionNormalTexture[] Vertices;
+        private readonly VertexPositionNormalTexture[] _vertices;
         public readonly Size3 Size;
+        public float YVelocity;
+        public float Opacity = 1f;
         public Vector3 Position;
         public readonly Color Color;
 
@@ -38,7 +39,7 @@ namespace MonoGame_StackRipoff
 
         public RectangularPrism(VertexPositionNormalTexture[] vertices, Vector3 position, Color color, Size3 size)
         {
-            Vertices = vertices;
+            _vertices = vertices;
             Position = position;
             Color = color;
             Size = size;
@@ -46,7 +47,7 @@ namespace MonoGame_StackRipoff
 
         public RectangularPrism(VertexPositionNormalTexture[] vertices, Color color, Size3 size)
         {
-            Vertices = vertices;
+            _vertices = vertices;
             Color = color;
             Size = size;
         }
@@ -163,7 +164,19 @@ namespace MonoGame_StackRipoff
 
         private RectangularPrism copyWithPosition(Vector3 position)
         {
-            return new RectangularPrism(Vertices, position, Color, Size);
+            return new RectangularPrism(_vertices, position, Color, Size);
+        }
+
+        public void Draw(GraphicsDevice graphics, BasicEffect effect)
+        {
+            effect.World = WorldMatrix;
+            effect.DiffuseColor = Color.ToVector3();
+            foreach (var pass in effect.CurrentTechnique.Passes)
+            {
+                effect.Alpha = Opacity;
+                pass.Apply();
+                graphics.DrawUserPrimitives(PrimitiveType.TriangleList, _vertices, 0, _vertices.Length / 3);
+            }
         }
     }
 }

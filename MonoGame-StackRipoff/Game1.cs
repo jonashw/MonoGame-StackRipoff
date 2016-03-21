@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using System.Globalization;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -9,6 +11,7 @@ namespace MonoGame_StackRipoff
         private readonly GraphicsDeviceManager _graphics;
         private SpriteFont _font;
         private SpriteBatch _spriteBatch;
+        private readonly List<RectangularPrism> _discardedPrisms = new List<RectangularPrism>();
         private readonly RasterizerState _rasterizerState = new RasterizerState
         {
             CullMode = CullMode.CullClockwiseFace
@@ -44,27 +47,28 @@ namespace MonoGame_StackRipoff
 
         protected override void Initialize()
         {
-            _keyboard.OnPress(Keys.Space,
-                () =>
-                {
-                    _bouncer.Prism.OverlapWith(_stack.Top, _bouncer.CurrentAxis).Do(
-                        perfect =>
-                        {
-                            _stack.Push(perfect.Landed);
-                            _cameraAnimator.Reset(_cameraY);
-                        },
-                        totalMiss => { },
-                        mixed =>
-                        {
-                            _stack.Push(mixed.Landed);
-                            _cameraAnimator.Reset(_cameraY);
-                        });
-                    _bouncer.Prism = _stack.CreateNextUnboundPrism();
-                    _bouncer.Reset();
-                    _bouncer.ToggleDirection();
-                });
-
+            _keyboard.OnPress(Keys.Space, placeCurrentPrism);
             base.Initialize();
+        }
+
+        private void placeCurrentPrism()
+        {
+            _bouncer.Prism.OverlapWith(_stack.Top, _bouncer.CurrentAxis).Do(
+                perfect =>
+                {
+                    _stack.Push(perfect.Landed);
+                    _cameraAnimator.Reset(_cameraY);
+                },
+                totalMiss => _discardedPrisms.Add(_bouncer.Prism),
+                mixed =>
+                {
+                    _stack.Push(mixed.Landed);
+                    _discardedPrisms.Add(mixed.Missed);
+                    _cameraAnimator.Reset(_cameraY);
+                });
+            _bouncer.Prism = _stack.CreateNextUnboundPrism();
+            _bouncer.Reset();
+            _bouncer.ToggleDirection();
         }
 
         protected override void LoadContent()
@@ -84,6 +88,13 @@ namespace MonoGame_StackRipoff
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
                 Exit();
+            }
+
+            foreach (var p in _discardedPrisms)
+            {
+                //p.YVelocity -= 0.03f;
+                p.Opacity -= 0.03f;
+                //p.Position.Y += p.YVelocity;
             }
 
             _keyboard.Update(Keyboard.GetState());
@@ -106,20 +117,25 @@ namespace MonoGame_StackRipoff
             _basicEffect.Projection = Matrix.CreateOrthographic(
                 GraphicsDevice.Viewport.Width/25f,
                 GraphicsDevice.Viewport.Height/25f,
-                1f,
+                0.1f,
                 500f);
 
             _basicEffect.EnableDefaultLighting();
 
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+
+            _bouncer.Prism.Draw(GraphicsDevice, _basicEffect);
             foreach (var prism in _stack.Prisms)
             {
-                drawPrism(prism);
+                prism.Draw(GraphicsDevice, _basicEffect);
             }
-            drawPrism(_bouncer.Prism);
+            foreach (var prism in _discardedPrisms)
+            {
+                prism.Draw(GraphicsDevice, _basicEffect);
+            }
 
             _spriteBatch.Begin();
-            var score = _stack.Score.ToString();
-            
+            var score = _stack.Score.ToString(CultureInfo.InvariantCulture);
             
             _spriteBatch.DrawString(
                 _font,
@@ -129,17 +145,6 @@ namespace MonoGame_StackRipoff
             _spriteBatch.End();
 
             base.Draw(gameTime);
-        }
-
-        private void drawPrism(RectangularPrism prism)
-        {
-            _basicEffect.World = prism.WorldMatrix;
-            _basicEffect.DiffuseColor = prism.Color.ToVector3();
-            foreach (var pass in _basicEffect.CurrentTechnique.Passes)
-            {
-                pass.Apply();
-                GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, prism.Vertices, 0, prism.Vertices.Length/3);
-            }
         }
     }
 }
