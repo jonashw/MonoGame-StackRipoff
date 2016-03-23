@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Linq;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoGame_StackRipoff
@@ -6,8 +7,14 @@ namespace MonoGame_StackRipoff
     public class RectangularRingBurst
     {
         private readonly RectangularRing _ring;
-        private readonly Animator _animator;
+        private readonly Animator[] _animators;
 
+        public Vector3 Position
+        {
+            get { return _ring.Position; }
+            set { _ring.Position = value; }
+        }
+        
         public RectangularRingBurst(float innerSizeX, float innerSizeZ)
         {
             _ring = new RectangularRing
@@ -16,16 +23,31 @@ namespace MonoGame_StackRipoff
                 InnerSizeZ = innerSizeZ,
                 OuterSize = 0.25f
             };
-            _animator = new Animator(Easing.CubicOut, innerSizeX, v =>
+            _animators = new[]
             {
-                _ring.InnerSizeX = v;
-                _ring.InnerSizeZ = v;
-            }, 2f*innerSizeX, 1);
+                new Animator(Easing.CubicOut, innerSizeX, v =>
+                {
+                    _ring.InnerSizeX = v;
+                }, innerSizeX, 1),
+
+                new Animator(Easing.CubicOut, innerSizeZ, v =>
+                {
+                    _ring.InnerSizeZ = v;
+                }, innerSizeZ, 1),
+
+                new Animator(Easing.CubicOut, 1, o =>
+                {
+                    _ring.Opacity = o;
+                }, -1, 1.5f)
+            };
         }
 
         public void Update(GameTime gameTime)
         {
-            _animator.Update(gameTime);
+            foreach (var a in _animators)
+            {
+                a.Update(gameTime);
+            }
         }
 
         public void Draw(GraphicsDevice graphics, BasicEffect effect)
@@ -35,12 +57,15 @@ namespace MonoGame_StackRipoff
 
         public bool Finished
         {
-            get { return _animator.Finished; }
+            get { return _animators.All(a => a.Finished); }
         }
 
         public void Reset()
         {
-            _animator.Reset();
+            foreach (var a in _animators)
+            {
+                a.Reset();
+            }
         }
     }
 }

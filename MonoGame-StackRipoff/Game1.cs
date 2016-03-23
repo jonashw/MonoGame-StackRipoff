@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -8,16 +9,24 @@ namespace MonoGame_StackRipoff
 {
     public class Game1 : Game
     {
+        private readonly MarkerLine _yAxisMarker = new MarkerLine()
+        {
+            StartPoint = new Vector3(0,-500,0),
+            EndPoint = new Vector3(0,500,0)
+        };
+
         private readonly GraphicsDeviceManager _graphics;
         private SpriteFont _font;
         private SpriteBatch _spriteBatch;
         private readonly List<RectangularPrism> _discardedPrisms = new List<RectangularPrism>();
+        private readonly List<RectangularRingBurst> _bursts = new List<RectangularRingBurst>();
         private readonly RasterizerState _rasterizerState = new RasterizerState
         {
             CullMode = CullMode.CullClockwiseFace
         };
         private readonly KeyboardEvents _keyboard = new KeyboardEvents();
         private BasicEffect _basicEffect;
+        private BasicEffect _starkWhiteEffect;
 
         private const int StartingPrismCount = 3;
         private readonly Stack _stack = new Stack(StartingPrismCount);
@@ -58,6 +67,13 @@ namespace MonoGame_StackRipoff
                 {
                     _stack.Push(perfect.Landed);
                     _cameraAnimator.Reset(_cameraY);
+                    _bursts.Add(new RectangularRingBurst(perfect.Landed.Size.X, perfect.Landed.Size.Z)
+                    {
+                        Position = new Vector3(
+                            perfect.Landed.Position.X,
+                            perfect.Landed.Bottom,
+                            perfect.Landed.Position.Z)
+                    });
                 },
                 totalMiss => _discardedPrisms.Add(_bouncer.Prism),
                 mixed =>
@@ -81,6 +97,11 @@ namespace MonoGame_StackRipoff
                 LightingEnabled = true,
                 DiffuseColor = Vector3.One
             };
+            _starkWhiteEffect = new BasicEffect(GraphicsDevice)
+            {
+                AmbientLightColor = Vector3.One,
+                DiffuseColor = Vector3.One
+            };
         }
 
         protected override void Update(GameTime gameTime)
@@ -100,6 +121,15 @@ namespace MonoGame_StackRipoff
             _keyboard.Update(Keyboard.GetState());
             _bouncer.Update(gameTime);
             _cameraAnimator.Update(gameTime);
+
+            foreach (var burst in _bursts)
+            {
+                burst.Update(gameTime);
+            }
+
+            var unfinishedBursts = _bursts.Where(b => !b.Finished).ToList();
+            _bursts.Clear();
+            _bursts.AddRange(unfinishedBursts);
 
             base.Update(gameTime);
         }
@@ -133,6 +163,12 @@ namespace MonoGame_StackRipoff
             {
                 prism.Draw(GraphicsDevice, _basicEffect);
             }
+            foreach (var burst in _bursts)
+            {
+                burst.Draw(GraphicsDevice, _basicEffect);
+            }
+
+            //_yAxisMarker.Draw(GraphicsDevice, _starkWhiteEffect);
 
             _spriteBatch.Begin();
             var score = _stack.Score.ToString(CultureInfo.InvariantCulture);

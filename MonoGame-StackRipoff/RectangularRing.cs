@@ -40,10 +40,11 @@ namespace MonoGame_StackRipoff
                 oMM, imM, omM
             }.Select(v => new VertexPositionNormalTexture(v, Vector3.UnitY, new Vector2())).ToArray();
 
+            effect.World = Matrix.CreateTranslation(Position);
             effect.DiffuseColor = Color.White.ToVector3();
-            effect.Alpha = Opacity;
             foreach (var pass in effect.CurrentTechnique.Passes)
             {
+                effect.Alpha = Opacity;
                 pass.Apply();
                 graphics.DrawUserPrimitives(PrimitiveType.TriangleList, triangles, 0, triangles.Length/3, VertexPositionNormalTexture.VertexDeclaration);
             }

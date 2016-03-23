@@ -13,12 +13,11 @@ namespace VisualTests
 
         private readonly IEnumerable<RectangularRingBurst> _bursts = new[]
         {
-            new RectangularRingBurst(0.5f, 0.5f), 
-            new RectangularRingBurst(1.0f, 1.0f), 
-            new RectangularRingBurst(1.5f, 1.5f), 
+            new RectangularRingBurst(1f, 1f), 
+            new RectangularRingBurst(2f, 2f), 
+            new RectangularRingBurst(3f, 3f), 
         };
 
-        private readonly IEnumerable<Animator> _ringAnimators;
         private readonly RasterizerState _rasterizerState = new RasterizerState
         {
             CullMode = CullMode.CullClockwiseFace

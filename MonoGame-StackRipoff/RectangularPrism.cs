@@ -21,20 +21,25 @@ namespace MonoGame_StackRipoff
 
         public float Left
         {
-            get { return Position.X - Size.X/2; }
+            get { return Position.X - Size.X/2f; }
         }
 
         public float Right
         {
-            get { return Position.X + Size.X/2; }
+            get { return Position.X + Size.X/2f; }
         }
         public float Front
         {
-            get { return Position.Z + Size.Z/2; }
+            get { return Position.Z + Size.Z/2f; }
         }
         public float Back
         {
-            get { return Position.Z - Size.Z/2; }
+            get { return Position.Z - Size.Z/2f; }
+        }
+
+        public float Bottom
+        {
+            get { return Position.Y - Size.Y/2f; }
         }
 
         public RectangularPrism(VertexPositionNormalTexture[] vertices, Vector3 position, Color color, Size3 size)
