@@ -9,6 +9,8 @@ namespace MonoGame_StackRipoff
 {
     public class Game1 : Game
     {
+        private const int StartingPrismCount = 3;
+
         private readonly MarkerLine _yAxisMarker = new MarkerLine()
         {
             StartPoint = new Vector3(0,-500,0),
@@ -29,7 +31,6 @@ namespace MonoGame_StackRipoff
         private BasicEffect _basicEffect;
         private BasicEffect _starkWhiteEffect;
 
-        private const int StartingPrismCount = 3;
         private readonly Stack _stack = new Stack(StartingPrismCount);
         private readonly PrismBouncer _bouncer = new PrismBouncer(
             RectangularPrismFactory.MakeStandard(new Vector3(0, StartingPrismCount * RectangularPrismFactory.TileHeight, 0)),
@@ -58,6 +59,11 @@ namespace MonoGame_StackRipoff
         protected override void Initialize()
         {
             _keyboard.OnPress(Keys.Space, placeCurrentPrism);
+            _keyboard.OnPress(Keys.Enter, () =>
+            {
+                _zoomedOut = !_zoomedOut;
+            });
+
             base.Initialize();
         }
 
@@ -136,23 +142,39 @@ namespace MonoGame_StackRipoff
             base.Update(gameTime);
         }
 
+        private bool _zoomedOut = false;
+
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.RasterizerState = _rasterizerState;
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _basicEffect.View =
-                Matrix.CreateTranslation(-0f, _cameraY, -0f)
-                *Matrix.CreateRotationY(MathHelper.ToRadians(45))
-                *Matrix.CreateRotationX(MathHelper.ToRadians(45))
-                *Matrix.CreateTranslation(0, 0, -100f);
+            if (_zoomedOut)
+            {
+                float prismCount = _stack.Prisms.Count();
+                var scale = 14f/prismCount;//14 prisms is the maximum amount that can fit vertically in orthographic view.
+                _basicEffect.View =
+                    Matrix.CreateTranslation(-0f, -prismCount, -0f)
+                    *Matrix.CreateRotationY(MathHelper.ToRadians(45))
+                    *Matrix.CreateRotationX(MathHelper.ToRadians(45))
+                    *Matrix.CreateScale(MathHelper.Min(scale,1))
+                    *Matrix.CreateTranslation(0, 0, -1000f);
+            }
+            else
+            {
+                _basicEffect.View =
+                    Matrix.CreateTranslation(-0f, _cameraY, -0f)
+                    *Matrix.CreateRotationY(MathHelper.ToRadians(45))
+                    *Matrix.CreateRotationX(MathHelper.ToRadians(45))
+                    *Matrix.CreateTranslation(0, 0, -100f);
+            }
 
 
             _basicEffect.Projection = Matrix.CreateOrthographic(
                 GraphicsDevice.Viewport.Width/25f,
                 GraphicsDevice.Viewport.Height/25f,
                 0.1f,
-                500f);
+                2000f);
 
             _basicEffect.EnableDefaultLighting();
 
