@@ -23,6 +23,7 @@ namespace MonoGame_StackRipoff
         private SpriteBatch _spriteBatch;
         private readonly List<RectangularPrism> _discardedPrisms = new List<RectangularPrism>();
         private readonly List<IRectangularRingAnimation> _bursts = new List<IRectangularRingAnimation>();
+        private GameState _state = GameState.Playing;
         private readonly RasterizerState _rasterizerState = new RasterizerState
         {
             CullMode = CullMode.CullClockwiseFace
@@ -58,7 +59,18 @@ namespace MonoGame_StackRipoff
 
         protected override void Initialize()
         {
-            _keyboard.OnPress(Keys.Space, placeCurrentPrism);
+            _keyboard.OnPress(Keys.Space, () =>
+            {
+                switch (_state)
+                {
+                    case(GameState.Playing):
+                        placeCurrentPrism();
+                        break;
+                    case GameState.GameOver:
+                        startNewGame();
+                        break;
+                }
+            });
             _keyboard.OnPress(Keys.Enter, () =>
             {
                 _zoomedOut = !_zoomedOut;
@@ -67,6 +79,29 @@ namespace MonoGame_StackRipoff
             base.Initialize();
         }
 
+        private void gameOver()
+        {
+            _zoomedOut = true;
+            _bouncer.Enabled = false;
+            _state = GameState.GameOver;
+            _cameraAnimator.Reset(_cameraY);
+        }
+
+        private void startNewGame()
+        {
+            _cameraAnimator.Reset(-5f);
+            _stack.StartOver(StartingPrismCount);
+            _bouncer.Prism = _stack.CreateNextUnboundPrism();
+            _bouncer.Enabled = true;
+            _state = GameState.Playing;
+            _zoomedOut = false;
+        }
+
+        public enum GameState
+        {
+            Playing,
+            GameOver
+        }
 
         private void placeCurrentPrism()
         {
@@ -81,6 +116,7 @@ namespace MonoGame_StackRipoff
                 {
                     _discardedPrisms.Add(_bouncer.Prism);
                     PlayRegistry.NotPerfect();
+                    gameOver();
                 },
                 mixed =>
                 {
@@ -152,7 +188,7 @@ namespace MonoGame_StackRipoff
             if (_zoomedOut)
             {
                 float prismCount = _stack.Prisms.Count();
-                var scale = 14f/prismCount;//14 prisms is the maximum amount that can fit vertically in orthographic view.
+                var scale = 12f/prismCount;//12 prisms is the maximum amount that can fit vertically in orthographic view.
                 _basicEffect.View =
                     Matrix.CreateTranslation(-0f, -prismCount, -0f)
                     *Matrix.CreateRotationY(MathHelper.ToRadians(45))
@@ -180,7 +216,7 @@ namespace MonoGame_StackRipoff
 
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
-            _bouncer.Prism.Draw(GraphicsDevice, _basicEffect);
+            _bouncer.Draw(GraphicsDevice, _basicEffect);
             foreach (var prism in _stack.Prisms)
             {
                 prism.Draw(GraphicsDevice, _basicEffect);

@@ -1,9 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoGame_StackRipoff
 {
     public class PrismBouncer
     {
+        public bool Enabled;
         public RectangularPrism Prism;
         public readonly float BounceSize;
         private readonly Animator _animator;
@@ -47,10 +49,15 @@ namespace MonoGame_StackRipoff
                 setValue,
                 -bounceSize,
                 2);
+            Enabled = true;
         }
 
         public void Update(GameTime gameTime)
         {
+            if (!Enabled)
+            {
+                return;
+            }
             _animator.Update(gameTime);
             if (!_animator.Finished)
             {
@@ -63,9 +70,22 @@ namespace MonoGame_StackRipoff
 
         public void Reset()
         {
+            if (!Enabled)
+            {
+                return;
+            }
             _animator.StartingValue = BounceSize;
             _animator.ValueChange = -2f*BounceSize;
             _animator.Reset();
+        }
+
+        public void Draw(GraphicsDevice graphics, BasicEffect effect)
+        {
+            if (!Enabled)
+            {
+                return;
+            }
+            Prism.Draw(graphics, effect);
         }
     }
 }

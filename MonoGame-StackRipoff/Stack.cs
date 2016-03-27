@@ -25,6 +25,17 @@ namespace MonoGame_StackRipoff
                 .ToList();
         }
 
+        public void StartOver(int prismCount)
+        {
+            _prisms.Clear();
+            foreach (var prism in Enumerable.Range(0, prismCount)
+                .Select(i => RectangularPrismFactory.MakeStandard(
+                    new Vector3(0, i*RectangularPrismFactory.TileHeight, 0))))
+            {
+                _prisms.Add(prism);
+            }
+        }
+
         public RectangularPrism Top
         {
             get { return _prisms.Last(); }
