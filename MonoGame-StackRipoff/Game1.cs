@@ -17,6 +17,7 @@ namespace MonoGame_StackRipoff
 
         private readonly GraphicsDeviceManager _graphics;
         private SpriteFont _font;
+        private SpriteFont _debugFont;
         private SpriteBatch _spriteBatch;
         private readonly List<RectangularPrism> _discardedPrisms = new List<RectangularPrism>();
         private readonly List<IRectangularRingAnimation> _bursts = new List<IRectangularRingAnimation>();
@@ -91,6 +92,7 @@ namespace MonoGame_StackRipoff
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _font = Content.Load<SpriteFont>("Century Gothic");
+            _debugFont = Content.Load<SpriteFont>("Consolas");
             _basicEffect = new BasicEffect(GraphicsDevice)
             {
                 AmbientLightColor = Vector3.One,
@@ -140,9 +142,11 @@ namespace MonoGame_StackRipoff
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _basicEffect.View =
-                Matrix.CreateRotationY(MathHelper.ToRadians(45))
+                Matrix.CreateTranslation(-0f, _cameraY, -0f)
+                *Matrix.CreateRotationY(MathHelper.ToRadians(45))
                 *Matrix.CreateRotationX(MathHelper.ToRadians(45))
-                *Matrix.CreateTranslation(0f, _cameraY, -400f);
+                *Matrix.CreateTranslation(0, 0, -100f);
+
 
             _basicEffect.Projection = Matrix.CreateOrthographic(
                 GraphicsDevice.Viewport.Width/25f,
@@ -178,6 +182,10 @@ namespace MonoGame_StackRipoff
                 score,
                 new Vector2((GraphicsDevice.Viewport.Width - _font.MeasureString(score).X)/2, 0),
                 Color.White);
+
+            _spriteBatch.DrawString(_debugFont, string.Format("Camera.Y=" + _cameraY), new Vector2(24,24), Color.White);
+            _spriteBatch.DrawString(_debugFont, string.Format("Stack.Top.Y=" + _stack.Top.Position.Y), new Vector2(24,48), Color.White);
+
             _spriteBatch.End();
 
             base.Draw(gameTime);
