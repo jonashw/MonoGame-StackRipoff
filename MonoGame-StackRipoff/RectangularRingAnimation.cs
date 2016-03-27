@@ -1,13 +1,15 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoGame_StackRipoff
 {
-    public class RectangularRingBurst
+    public class RectangularRingAnimation : IRectangularRingAnimation
     {
         private readonly RectangularRing _ring;
         private readonly Animator[] _animators;
+        public const float Width = 0.25f;
 
         public Vector3 Position
         {
@@ -15,25 +17,25 @@ namespace MonoGame_StackRipoff
             set { _ring.Position = value; }
         }
         
-        public RectangularRingBurst(float innerSizeX, float innerSizeZ)
+        public RectangularRingAnimation(float innerSizeX, float innerSizeZ)
         {
             _ring = new RectangularRing
             {
                 InnerSizeX = innerSizeX,
                 InnerSizeZ = innerSizeZ,
-                OuterSize = 0.25f
+                OuterSize = Width
             };
             _animators = new[]
             {
                 new Animator(Easing.CubicOut, innerSizeX, v =>
                 {
                     _ring.InnerSizeX = v;
-                }, innerSizeX, 1),
+                }, innerSizeX/2f, 1),
 
                 new Animator(Easing.CubicOut, innerSizeZ, v =>
                 {
                     _ring.InnerSizeZ = v;
-                }, innerSizeZ, 1),
+                }, innerSizeZ/2f, 1),
 
                 new Animator(Easing.CubicOut, 1, o =>
                 {

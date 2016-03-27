@@ -11,11 +11,13 @@ namespace VisualTests
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private readonly IEnumerable<RectangularRingBurst> _bursts = new[]
+        private readonly IEnumerable<IRectangularRingAnimation> _bursts = new[]
         {
-            new RectangularRingBurst(1f, 1f), 
-            new RectangularRingBurst(2f, 2f), 
-            new RectangularRingBurst(3f, 3f), 
+            (IRectangularRingAnimation) new RectangularRingHalo(4f, 4f){Position = new Vector3(-6, 0, 0)},
+            new RectangularRingAnimation(4f, 4f){Position = new Vector3(-2, 0, 0)},
+            MultiRectangularRingAnimation.Create(4, 4, 2, new Vector3(2, 0, 0)),
+            MultiRectangularRingAnimation.Create(4, 4, 3, new Vector3(6, 0, 0)),
+            MultiRectangularRingAnimation.Create(4, 4, 4, new Vector3(10, 0, 0))
         };
 
         private readonly RasterizerState _rasterizerState = new RasterizerState
@@ -25,7 +27,11 @@ namespace VisualTests
 
         public Game1()
         {
-            _graphics = new GraphicsDeviceManager(this);
+            _graphics = new GraphicsDeviceManager(this)
+            {
+                PreferredBackBufferWidth = 1280,
+                PreferredBackBufferHeight = 720
+            };
             Content.RootDirectory = "Content";
         }
 
@@ -42,8 +48,10 @@ namespace VisualTests
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
                 Exit();
+            }
 
             foreach (var burst in _bursts)
             {
@@ -61,9 +69,11 @@ namespace VisualTests
 
         protected override void Draw(GameTime gameTime)
         {
-            _effect.EnableDefaultLighting();
             GraphicsDevice.RasterizerState = _rasterizerState;
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            _effect.EnableDefaultLighting();
+
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
             _effect.View =
                 Matrix.CreateRotationY(MathHelper.ToRadians(45))

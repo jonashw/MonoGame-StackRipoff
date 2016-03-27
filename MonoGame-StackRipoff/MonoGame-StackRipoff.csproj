@@ -43,8 +43,11 @@
     <Compile Include="CubeFactory.cs" />
     <Compile Include="Easing.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="IRectangularRingAnimation.cs" />
     <Compile Include="KeyboardEvents.cs" />
     <Compile Include="MarkerLine.cs" />
+    <Compile Include="MultiRectangularRingAnimation.cs" />
+    <Compile Include="PlayRegistry.cs" />
     <Compile Include="PrismBounceAxis.cs" />
     <Compile Include="PrismBouncer.cs" />
     <Compile Include="PrismOverlapResult.cs" />
@@ -53,7 +56,8 @@
     <Compile Include="RectangularPrism.cs" />
     <Compile Include="RectangularPrismFactory.cs" />
     <Compile Include="RectangularRing.cs" />
-    <Compile Include="RectangularRingBurst.cs" />
+    <Compile Include="RectangularRingAnimation.cs" />
+    <Compile Include="RectangularRingHalo.cs" />
     <Compile Include="SceneColors.cs" />
     <Compile Include="Size3.cs" />
     <Compile Include="Stack.cs" />

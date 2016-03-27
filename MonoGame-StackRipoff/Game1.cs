@@ -19,7 +19,7 @@ namespace MonoGame_StackRipoff
         private SpriteFont _font;
         private SpriteBatch _spriteBatch;
         private readonly List<RectangularPrism> _discardedPrisms = new List<RectangularPrism>();
-        private readonly List<RectangularRingBurst> _bursts = new List<RectangularRingBurst>();
+        private readonly List<IRectangularRingAnimation> _bursts = new List<IRectangularRingAnimation>();
         private readonly RasterizerState _rasterizerState = new RasterizerState
         {
             CullMode = CullMode.CullClockwiseFace
@@ -60,6 +60,7 @@ namespace MonoGame_StackRipoff
             base.Initialize();
         }
 
+
         private void placeCurrentPrism()
         {
             _bouncer.Prism.OverlapWith(_stack.Top, _bouncer.CurrentAxis).Do(
@@ -67,20 +68,19 @@ namespace MonoGame_StackRipoff
                 {
                     _stack.Push(perfect.Landed);
                     _cameraAnimator.Reset(_cameraY);
-                    _bursts.Add(new RectangularRingBurst(perfect.Landed.Size.X, perfect.Landed.Size.Z)
-                    {
-                        Position = new Vector3(
-                            perfect.Landed.Position.X,
-                            perfect.Landed.Bottom,
-                            perfect.Landed.Position.Z)
-                    });
+                    _bursts.Add(PlayRegistry.Perfect(perfect));
                 },
-                totalMiss => _discardedPrisms.Add(_bouncer.Prism),
+                totalMiss =>
+                {
+                    _discardedPrisms.Add(_bouncer.Prism);
+                    PlayRegistry.NotPerfect();
+                },
                 mixed =>
                 {
                     _stack.Push(mixed.Landed);
                     _discardedPrisms.Add(mixed.Missed);
                     _cameraAnimator.Reset(_cameraY);
+                    PlayRegistry.NotPerfect();
                 });
             _bouncer.Prism = _stack.CreateNextUnboundPrism();
             _bouncer.Reset();
