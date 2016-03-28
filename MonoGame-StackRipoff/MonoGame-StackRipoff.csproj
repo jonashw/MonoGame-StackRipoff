@@ -41,6 +41,7 @@
     <Compile Include="Animator.cs" />
     <Compile Include="CircularArray.cs" />
     <Compile Include="CubeFactory.cs" />
+    <Compile Include="Cursor.cs" />
     <Compile Include="Easing.cs" />
     <Compile Include="EasyTimer.cs" />
     <Compile Include="Game1.cs" />

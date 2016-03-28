@@ -29,6 +29,7 @@ namespace MonoGame_StackRipoff
         private readonly List<RectangularPrism> _discardedPrisms = new List<RectangularPrism>();
         private readonly List<IRectangularRingAnimation> _bursts = new List<IRectangularRingAnimation>();
         private GameState _state = GameState.Welcome;
+        private Cursor _cursor;
         private readonly RasterizerState _rasterizerState = new RasterizerState
         {
             CullMode = CullMode.CullClockwiseFace
@@ -57,7 +58,7 @@ namespace MonoGame_StackRipoff
             _graphics = new GraphicsDeviceManager(this)
             {
                 PreferredBackBufferWidth = 1280,
-                PreferredBackBufferHeight = 720
+                PreferredBackBufferHeight = 720,
             };
 
             Content.RootDirectory = "Content";
@@ -76,6 +77,7 @@ namespace MonoGame_StackRipoff
                 LightingEnabled = true,
                 DiffuseColor = Vector3.One
             };
+            _cursor = new Cursor(Content.Load<Texture2D>("Cursor"));
             _starkWhiteEffect = new BasicEffect(GraphicsDevice)
             {
                 AmbientLightColor = Vector3.One,
@@ -97,32 +99,24 @@ namespace MonoGame_StackRipoff
 
         protected override void Initialize()
         {
-            _keyboard.OnPress(Keys.Space, () =>
+            Action handleSimpleInput = () =>
             {
                 switch (_state)
                 {
                     case GameState.Welcome:
                         startPlaying();
                         break;
-                    case(GameState.Playing):
+                    case (GameState.Playing):
                         placeCurrentPrism();
                         break;
                     case GameState.GameOver:
                         backToWelcome();
                         break;
                 }
-            });
-            _keyboard.OnPress(Keys.Enter, () =>
-            {
-                _zoomedOut = !_zoomedOut;
-            });
-            _mouse.OnLeftClick((x, y) =>
-            {
-                if (_state == GameState.Welcome)
-                {
-                    startPlaying();
-                }
-            });
+            };
+
+            _keyboard.OnPress(Keys.Space, handleSimpleInput);
+            _mouse.OnLeftClick((x, y) => handleSimpleInput());
 
             base.Initialize();
         }
@@ -300,12 +294,6 @@ namespace MonoGame_StackRipoff
             _basicEffect.EnableDefaultLighting();
 
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-
-            var score = _stack.Score.ToString(CultureInfo.InvariantCulture);
-
-            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
-
-            _particleSystem.Draw(_spriteBatch);
             _bouncer.Draw(GraphicsDevice, _basicEffect);
             foreach (var prism in _stack.Prisms)
             {
@@ -322,8 +310,15 @@ namespace MonoGame_StackRipoff
 
             //_yAxisMarker.Draw(GraphicsDevice, _starkWhiteEffect);
 
+            var score = _stack.Score.ToString(CultureInfo.InvariantCulture);
+
+            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, depthStencilState: DepthStencilState.Default);
+            _particleSystem.Draw(_spriteBatch);
+            _spriteBatch.End();
+            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, depthStencilState: DepthStencilState.None);
             _playButton.Draw(_spriteBatch);
             _logo.Draw(_spriteBatch);
+            _cursor.Draw(_spriteBatch);
 
             if (_state == GameState.Playing || _state == GameState.GameOver)
             {
