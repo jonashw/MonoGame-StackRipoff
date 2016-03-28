@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Microsoft.Xna.Framework;
@@ -17,6 +18,8 @@ namespace MonoGame_StackRipoff
             EndPoint = new Vector3(0,500,0)
         };
 
+        private readonly EasyTimer _particleTimer = new EasyTimer(TimeSpan.FromSeconds(0.75f));
+        private ParticleSystem _particleSystem;
         private readonly GraphicsDeviceManager _graphics;
         private SpriteFont _font;
         private SpriteFont _debugFont;
@@ -55,6 +58,25 @@ namespace MonoGame_StackRipoff
             };
 
             Content.RootDirectory = "Content";
+        }
+
+        protected override void LoadContent()
+        {
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _font = Content.Load<SpriteFont>("Century Gothic");
+            _debugFont = Content.Load<SpriteFont>("Consolas");
+            _basicEffect = new BasicEffect(GraphicsDevice)
+            {
+                AmbientLightColor = Vector3.One,
+                LightingEnabled = true,
+                DiffuseColor = Vector3.One
+            };
+            _starkWhiteEffect = new BasicEffect(GraphicsDevice)
+            {
+                AmbientLightColor = Vector3.One,
+                DiffuseColor = Vector3.One
+            };
+            _particleSystem = new ParticleSystem(GraphicsDevice, Content);
         }
 
         protected override void Initialize()
@@ -130,24 +152,6 @@ namespace MonoGame_StackRipoff
             _bouncer.ToggleDirection();
         }
 
-        protected override void LoadContent()
-        {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _font = Content.Load<SpriteFont>("Century Gothic");
-            _debugFont = Content.Load<SpriteFont>("Consolas");
-            _basicEffect = new BasicEffect(GraphicsDevice)
-            {
-                AmbientLightColor = Vector3.One,
-                LightingEnabled = true,
-                DiffuseColor = Vector3.One
-            };
-            _starkWhiteEffect = new BasicEffect(GraphicsDevice)
-            {
-                AmbientLightColor = Vector3.One,
-                DiffuseColor = Vector3.One
-            };
-        }
-
         protected override void Update(GameTime gameTime)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -165,6 +169,18 @@ namespace MonoGame_StackRipoff
             _keyboard.Update(Keyboard.GetState());
             _bouncer.Update(gameTime);
             _cameraAnimator.Update(gameTime);
+
+            if (_state == GameState.Playing)
+            {
+                if (_particleTimer.IsFinished(gameTime))
+                {
+                    _particleSystem.SpawnRandom();
+                    _particleSystem.SpawnRandom();
+                    _particleSystem.SpawnRandom();
+                    _particleTimer.Reset(gameTime);
+                }
+                _particleSystem.Update(gameTime);
+            }
 
             foreach (var burst in _bursts)
             {
@@ -188,7 +204,7 @@ namespace MonoGame_StackRipoff
             if (_zoomedOut)
             {
                 float prismCount = _stack.Prisms.Count();
-                var scale = 12f/prismCount;//12 prisms is the maximum amount that can fit vertically in orthographic view.
+                var scale = 8f/prismCount;//8 prisms is the maximum amount that can fit vertically in orthographic view.
                 _basicEffect.View =
                     Matrix.CreateTranslation(-0f, -prismCount, -0f)
                     *Matrix.CreateRotationY(MathHelper.ToRadians(45))
@@ -216,6 +232,7 @@ namespace MonoGame_StackRipoff
 
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
+
             _bouncer.Draw(GraphicsDevice, _basicEffect);
             foreach (var prism in _stack.Prisms)
             {
@@ -232,8 +249,11 @@ namespace MonoGame_StackRipoff
 
             //_yAxisMarker.Draw(GraphicsDevice, _starkWhiteEffect);
 
-            _spriteBatch.Begin();
             var score = _stack.Score.ToString(CultureInfo.InvariantCulture);
+
+            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, depthStencilState:DepthStencilState.Default);
+
+            _particleSystem.Draw(_spriteBatch);
             
             _spriteBatch.DrawString(
                 _font,
