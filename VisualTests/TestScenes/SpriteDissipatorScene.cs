@@ -56,6 +56,7 @@ namespace VisualTests.TestScenes
             foreach (var d in _dissipators)
             {
                 d.Reset();
+                d.Start();
             }
         }
     }

@@ -47,6 +47,7 @@
     <Compile Include="IRectangularRingAnimation.cs" />
     <Compile Include="KeyboardEvents.cs" />
     <Compile Include="MarkerLine.cs" />
+    <Compile Include="MouseEvents.cs" />
     <Compile Include="MultiRectangularRingAnimation.cs" />
     <Compile Include="ParticleSystem.cs" />
     <Compile Include="PlayRegistry.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="Size3.cs" />
     <Compile Include="SpriteDissipator.cs" />
     <Compile Include="Stack.cs" />
+    <Compile Include="ViewportExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">

@@ -60,11 +60,13 @@ namespace MonoGame_StackRipoff
             {
                 return;
             }
+            var zeroGameTime = new GameTime();
             foreach (var a in _animators)
             {
                 a.Reset();
+                a.Update(zeroGameTime);
             }
-            State = SpriteDissipatorState.Running;
+            State = SpriteDissipatorState.Ready;
         }
 
         public void Update(GameTime gameTime)

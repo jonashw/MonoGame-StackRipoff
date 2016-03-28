@@ -18,6 +18,8 @@ namespace MonoGame_StackRipoff
             EndPoint = new Vector3(0,500,0)
         };
 
+        private SpriteDissipator _playButton;
+        private SpriteDissipator _logo;
         private readonly EasyTimer _particleTimer = new EasyTimer(TimeSpan.FromSeconds(0.75f));
         private ParticleSystem _particleSystem;
         private readonly GraphicsDeviceManager _graphics;
@@ -26,12 +28,13 @@ namespace MonoGame_StackRipoff
         private SpriteBatch _spriteBatch;
         private readonly List<RectangularPrism> _discardedPrisms = new List<RectangularPrism>();
         private readonly List<IRectangularRingAnimation> _bursts = new List<IRectangularRingAnimation>();
-        private GameState _state = GameState.Playing;
+        private GameState _state = GameState.Welcome;
         private readonly RasterizerState _rasterizerState = new RasterizerState
         {
             CullMode = CullMode.CullClockwiseFace
         };
         private readonly KeyboardEvents _keyboard = new KeyboardEvents();
+        private readonly MouseEvents _mouse;
         private BasicEffect _basicEffect;
         private BasicEffect _starkWhiteEffect;
 
@@ -58,6 +61,8 @@ namespace MonoGame_StackRipoff
             };
 
             Content.RootDirectory = "Content";
+            _bouncer.Enabled = false;
+            _mouse = new MouseEvents(Window);
         }
 
         protected override void LoadContent()
@@ -77,6 +82,17 @@ namespace MonoGame_StackRipoff
                 DiffuseColor = Vector3.One
             };
             _particleSystem = new ParticleSystem(GraphicsDevice, Content);
+
+            var playButtonTexture = Content.Load<Texture2D>("PlayButton");
+
+            _playButton = new SpriteDissipator(
+                playButtonTexture,
+                GraphicsDevice.Viewport.GetCenter() - new Vector2(playButtonTexture.Width, playButtonTexture.Height)/2f);
+
+            var logoTexture = Content.Load<Texture2D>("Logo");
+            _logo = new SpriteDissipator(
+                logoTexture,
+                GraphicsDevice.Viewport.GetCenter() - new Vector2(logoTexture.Width, logoTexture.Height + 500)/2f);
         }
 
         protected override void Initialize()
@@ -85,11 +101,14 @@ namespace MonoGame_StackRipoff
             {
                 switch (_state)
                 {
+                    case GameState.Welcome:
+                        startPlaying();
+                        break;
                     case(GameState.Playing):
                         placeCurrentPrism();
                         break;
                     case GameState.GameOver:
-                        startNewGame();
+                        backToWelcome();
                         break;
                 }
             });
@@ -97,30 +116,69 @@ namespace MonoGame_StackRipoff
             {
                 _zoomedOut = !_zoomedOut;
             });
+            _mouse.OnLeftClick((x, y) =>
+            {
+                if (_state == GameState.Welcome)
+                {
+                    startPlaying();
+                }
+            });
 
             base.Initialize();
         }
 
+        private void startPlaying()
+        {
+            if (_state != GameState.Welcome)
+            {
+                return;
+            }
+            _state = GameState.Starting;
+            _playButton.Start();
+            _logo.Start();
+        }
+
+        private void playing()
+        {
+            if (_state != GameState.Starting)
+            {
+                return;
+            }
+            _bouncer.Prism = _stack.CreateNextUnboundPrism();
+            _bouncer.Enabled = true;
+            _state = GameState.Playing;
+        }
+
         private void gameOver()
         {
+            if (_state != GameState.Playing)
+            {
+                return;
+            }
             _zoomedOut = true;
             _bouncer.Enabled = false;
             _state = GameState.GameOver;
             _cameraAnimator.Reset(_cameraY);
         }
 
-        private void startNewGame()
+        private void backToWelcome()
         {
+            if (_state != GameState.GameOver)
+            {
+                return;
+            }
             _cameraAnimator.Reset(-5f);
             _stack.StartOver(StartingPrismCount);
-            _bouncer.Prism = _stack.CreateNextUnboundPrism();
-            _bouncer.Enabled = true;
-            _state = GameState.Playing;
+            _state = GameState.Welcome;
             _zoomedOut = false;
+            _playButton.Reset();
+            _logo.Reset();
         }
 
         public enum GameState
         {
+            Welcome,
+            Starting,
             Playing,
             GameOver
         }
@@ -133,11 +191,17 @@ namespace MonoGame_StackRipoff
                     _stack.Push(perfect.Landed);
                     _cameraAnimator.Reset(_cameraY);
                     _bursts.Add(PlayRegistry.Perfect(perfect));
+                    _bouncer.Prism = _stack.CreateNextUnboundPrism();
+                    _bouncer.Reset();
+                    _bouncer.ToggleDirection();
                 },
                 totalMiss =>
                 {
                     _discardedPrisms.Add(_bouncer.Prism);
                     PlayRegistry.NotPerfect();
+                    _bouncer.Prism = _stack.CreateNextUnboundPrism();
+                    _bouncer.Reset();
+                    _bouncer.ToggleDirection();
                     gameOver();
                 },
                 mixed =>
@@ -146,10 +210,10 @@ namespace MonoGame_StackRipoff
                     _discardedPrisms.Add(mixed.Missed);
                     _cameraAnimator.Reset(_cameraY);
                     PlayRegistry.NotPerfect();
+                    _bouncer.Prism = _stack.CreateNextUnboundPrism();
+                    _bouncer.Reset();
+                    _bouncer.ToggleDirection();
                 });
-            _bouncer.Prism = _stack.CreateNextUnboundPrism();
-            _bouncer.Reset();
-            _bouncer.ToggleDirection();
         }
 
         protected override void Update(GameTime gameTime)
@@ -158,6 +222,8 @@ namespace MonoGame_StackRipoff
             {
                 Exit();
             }
+            _keyboard.Update(Keyboard.GetState());
+            _mouse.Update(gameTime);
 
             foreach (var p in _discardedPrisms)
             {
@@ -166,7 +232,15 @@ namespace MonoGame_StackRipoff
                 //p.Position.Y += p.YVelocity;
             }
 
-            _keyboard.Update(Keyboard.GetState());
+            if (_state == GameState.Playing || _state == GameState.Welcome || _state == GameState.Starting)
+            {
+                _playButton.Update(gameTime);
+                _logo.Update(gameTime);
+                if (_state == GameState.Starting && _playButton.State == SpriteDissipatorState.Finished)
+                {
+                    playing();
+                }
+            }
             _bouncer.Update(gameTime);
             _cameraAnimator.Update(gameTime);
 
@@ -227,7 +301,11 @@ namespace MonoGame_StackRipoff
 
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
+            var score = _stack.Score.ToString(CultureInfo.InvariantCulture);
 
+            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+
+            _particleSystem.Draw(_spriteBatch);
             _bouncer.Draw(GraphicsDevice, _basicEffect);
             foreach (var prism in _stack.Prisms)
             {
@@ -244,17 +322,17 @@ namespace MonoGame_StackRipoff
 
             //_yAxisMarker.Draw(GraphicsDevice, _starkWhiteEffect);
 
-            var score = _stack.Score.ToString(CultureInfo.InvariantCulture);
+            _playButton.Draw(_spriteBatch);
+            _logo.Draw(_spriteBatch);
 
-            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, depthStencilState:DepthStencilState.Default);
-
-            _particleSystem.Draw(_spriteBatch);
-            
-            _spriteBatch.DrawString(
-                _font,
-                score,
-                new Vector2((GraphicsDevice.Viewport.Width - _font.MeasureString(score).X)/2, 0),
-                Color.White);
+            if (_state == GameState.Playing || _state == GameState.GameOver)
+            {
+                _spriteBatch.DrawString(
+                    _font,
+                    score,
+                    new Vector2((GraphicsDevice.Viewport.Width - _font.MeasureString(score).X)/2, 0),
+                    Color.White);
+            }
 
             _spriteBatch.End();
 
