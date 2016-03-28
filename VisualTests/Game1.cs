@@ -24,8 +24,8 @@ namespace VisualTests
         private readonly CircularArray<SceneDescriptor> _sceneDescriptors = new CircularArray<SceneDescriptor>(
             new []
             {
-                new SceneDescriptor("Bursts", (g,c) => new BurstScene(g)), 
                 new SceneDescriptor("Particles", (g,c) => new ParticlesScene(g,c)), 
+                new SceneDescriptor("Bursts", (g,c) => new BurstScene(g)), 
                 new SceneDescriptor("Text Test", (g,c) => new TextScene(g,c)), 
             });
 
@@ -113,16 +113,30 @@ namespace VisualTests
             }
 
             var i = 0;
+            var itemWidth = GraphicsDevice.Viewport.Width/_sceneDescriptors.Count;
             foreach (var sceneDescriptor in _sceneDescriptors.All)
             {
+                var active = sceneDescriptor == _sceneDescriptors.GetCurrent();
+                _spriteBatch.FillRectangle(
+                    new Rectangle(
+                        itemWidth*i,
+                        GraphicsDevice.Viewport.Height - 48,
+                        itemWidth,
+                        48),
+                    active ? Color.White : Color.Black);
+
+                var strWidth = _font.MeasureString(sceneDescriptor.Name).X;
+
                 _spriteBatch.DrawString(
                     _font,
                     sceneDescriptor.Name,
-                    new Vector2(48 + 100*i, GraphicsDevice.Viewport.Height - 48),
-                    sceneDescriptor == _sceneDescriptors.GetCurrent() ? Color.Black :  Color.White);
+                    new Vector2(
+                        itemWidth*i + (itemWidth - strWidth)/2f,
+                        GraphicsDevice.Viewport.Height - 32),
+                    active ? Color.Black : Color.White);
                 i++;
             }
-            
+
             _spriteBatch.End();
 
             base.Draw(gameTime);

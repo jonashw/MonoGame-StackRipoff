@@ -50,6 +50,7 @@
     <Compile Include="MultiRectangularRingAnimation.cs" />
     <Compile Include="ParticleSystem.cs" />
     <Compile Include="PlayRegistry.cs" />
+    <Compile Include="Primitives2D.cs" />
     <Compile Include="PrismBounceAxis.cs" />
     <Compile Include="PrismBouncer.cs" />
     <Compile Include="PrismOverlapResult.cs" />

@@ -15,6 +15,7 @@ namespace MonoGame_StackRipoff
             }
 
             public IEnumerable<T> All { get { return _items; } }
+            public int Count { get { return _items.Length; } }
 
             public T GetCurrent()
             {

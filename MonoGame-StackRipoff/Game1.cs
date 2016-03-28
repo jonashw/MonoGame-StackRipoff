@@ -170,17 +170,12 @@ namespace MonoGame_StackRipoff
             _bouncer.Update(gameTime);
             _cameraAnimator.Update(gameTime);
 
-            if (_state == GameState.Playing)
+            if (_particleTimer.IsFinished(gameTime))
             {
-                if (_particleTimer.IsFinished(gameTime))
-                {
-                    _particleSystem.SpawnRandom();
-                    _particleSystem.SpawnRandom();
-                    _particleSystem.SpawnRandom();
-                    _particleTimer.Reset(gameTime);
-                }
-                _particleSystem.Update(gameTime);
+                _particleSystem.SpawnRandom(3);
+                _particleTimer.Reset(gameTime);
             }
+            _particleSystem.Update(gameTime);
 
             foreach (var burst in _bursts)
             {

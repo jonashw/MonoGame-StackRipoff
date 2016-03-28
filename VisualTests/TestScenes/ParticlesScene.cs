@@ -25,7 +25,7 @@ namespace VisualTests.TestScenes
             _particleSystem.Update(gameTime);
             if (_timer.IsFinished(gameTime))
             {
-                _particleSystem.SpawnRandom();
+                _particleSystem.SpawnRandom(3);
                 _timer.Reset(gameTime);
             }
         }
