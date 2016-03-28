@@ -45,6 +45,7 @@
     <Compile Include="SceneDescriptor.cs" />
     <Compile Include="TestScenes\BurstScene.cs" />
     <Compile Include="TestScenes\ParticlesScene.cs" />
+    <Compile Include="TestScenes\PlayButtonScene.cs" />
     <Compile Include="TestScenes\TextScene.cs" />
   </ItemGroup>
   <ItemGroup>
