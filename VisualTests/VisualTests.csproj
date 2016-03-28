@@ -41,6 +41,11 @@
     <Compile Include="Game1.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scene.cs" />
+    <Compile Include="SceneDescriptor.cs" />
+    <Compile Include="TestScenes\BurstScene.cs" />
+    <Compile Include="TestScenes\ParticlesScene.cs" />
+    <Compile Include="TestScenes\TextScene.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">

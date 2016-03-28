@@ -42,11 +42,13 @@
     <Compile Include="CircularArray.cs" />
     <Compile Include="CubeFactory.cs" />
     <Compile Include="Easing.cs" />
+    <Compile Include="EasyTimer.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="IRectangularRingAnimation.cs" />
     <Compile Include="KeyboardEvents.cs" />
     <Compile Include="MarkerLine.cs" />
     <Compile Include="MultiRectangularRingAnimation.cs" />
+    <Compile Include="ParticleSystem.cs" />
     <Compile Include="PlayRegistry.cs" />
     <Compile Include="PrismBounceAxis.cs" />
     <Compile Include="PrismBouncer.cs" />

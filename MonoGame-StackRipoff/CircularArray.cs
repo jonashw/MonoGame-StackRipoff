@@ -1,4 +1,6 @@
-﻿namespace MonoGame_StackRipoff
+﻿using System.Collections.Generic;
+
+namespace MonoGame_StackRipoff
 {
     namespace MonoGameInscribedTriangles
     {
@@ -11,6 +13,8 @@
             {
                 _items = items;
             }
+
+            public IEnumerable<T> All { get { return _items; } }
 
             public T GetCurrent()
             {

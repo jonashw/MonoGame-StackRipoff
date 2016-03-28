@@ -241,9 +241,6 @@ namespace MonoGame_StackRipoff
                 new Vector2((GraphicsDevice.Viewport.Width - _font.MeasureString(score).X)/2, 0),
                 Color.White);
 
-            _spriteBatch.DrawString(_debugFont, string.Format("Camera.Y=" + _cameraY), new Vector2(24,24), Color.White);
-            _spriteBatch.DrawString(_debugFont, string.Format("Stack.Top.Y=" + _stack.Top.Position.Y), new Vector2(24,48), Color.White);
-
             _spriteBatch.End();
 
             base.Draw(gameTime);

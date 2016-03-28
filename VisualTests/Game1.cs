@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame_StackRipoff;
+using MonoGame_StackRipoff.MonoGameInscribedTriangles;
+using VisualTests.TestScenes;
 
 namespace VisualTests
 {
@@ -10,20 +12,22 @@ namespace VisualTests
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
-        private readonly IEnumerable<IRectangularRingAnimation> _bursts = new[]
-        {
-            (IRectangularRingAnimation) new RectangularRingHalo(4f, 4f){Position = new Vector3(-6, 0, 0)},
-            new RectangularRingAnimation(4f, 4f){Position = new Vector3(-2, 0, 0)},
-            MultiRectangularRingAnimation.Create(4, 4, 2, new Vector3(2, 0, 0)),
-            MultiRectangularRingAnimation.Create(4, 4, 3, new Vector3(6, 0, 0)),
-            MultiRectangularRingAnimation.Create(4, 4, 4, new Vector3(10, 0, 0))
-        };
+        private SpriteFont _font;
+        private Scene _scene;
+        private readonly KeyboardEvents _keyboard = new KeyboardEvents();
 
         private readonly RasterizerState _rasterizerState = new RasterizerState
         {
             CullMode = CullMode.CullClockwiseFace
         };
+
+        private readonly CircularArray<SceneDescriptor> _sceneDescriptors = new CircularArray<SceneDescriptor>(
+            new []
+            {
+                new SceneDescriptor("Bursts", (g,c) => new BurstScene(g)), 
+                new SceneDescriptor("Particles", (g,c) => new ParticlesScene(g,c)), 
+                new SceneDescriptor("Text Test", (g,c) => new TextScene(g,c)), 
+            });
 
         public Game1()
         {
@@ -38,12 +42,44 @@ namespace VisualTests
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _effect = new BasicEffect(GraphicsDevice)
+            _font = Content.Load<SpriteFont>("Consolas");
+            loadScene();
+        }
+
+        protected override void Initialize()
+        {
+            _keyboard.OnPress(Keys.Space, () =>
             {
-                AmbientLightColor = Vector3.One,
-                LightingEnabled = true,
-                DiffuseColor = Vector3.One
-            };
+                if (_scene != null)
+                {
+                    _sceneDescriptors.Next();
+                }
+                loadScene();
+            });
+
+            _keyboard.OnPress(Keys.Left, () =>
+            {
+                if (_scene != null)
+                {
+                    _sceneDescriptors.Prev();
+                }
+                loadScene();
+            });
+
+            _keyboard.OnPress(Keys.Right, () =>
+            {
+                if (_scene != null)
+                {
+                    _sceneDescriptors.Next();
+                }
+                loadScene();
+            });
+            base.Initialize();
+        }
+
+        private void loadScene()
+        {
+            _scene = _sceneDescriptors.GetCurrent().Create(GraphicsDevice, Content);
         }
 
         protected override void Update(GameTime gameTime)
@@ -52,44 +88,42 @@ namespace VisualTests
             {
                 Exit();
             }
+            _keyboard.Update(Keyboard.GetState());
 
-            foreach (var burst in _bursts)
+            if (_scene != null)
             {
-                burst.Update(gameTime);
-                if (burst.Finished)
-                {
-                    burst.Reset();
-                }
+                _scene.Update(gameTime);
             }
 
             base.Update(gameTime);
         }
 
-        private BasicEffect _effect;
-
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.RasterizerState = _rasterizerState;
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            _effect.EnableDefaultLighting();
 
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
-            _effect.View =
-                Matrix.CreateRotationY(MathHelper.ToRadians(45))
-                *Matrix.CreateRotationX(MathHelper.ToRadians(45))
-                *Matrix.CreateTranslation(0f, 0, -400f);
-
-            _effect.Projection = Matrix.CreateOrthographic(
-                GraphicsDevice.Viewport.Width/25f,
-                GraphicsDevice.Viewport.Height/25f,
-                0.1f,
-                500f);
-
-            foreach (var burst in _bursts)
+            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+            if (_scene != null)
             {
-                burst.Draw(GraphicsDevice, _effect);
+                _scene.DrawOther(gameTime);
+                _scene.DrawSprites(_spriteBatch,gameTime);
             }
+
+            var i = 0;
+            foreach (var sceneDescriptor in _sceneDescriptors.All)
+            {
+                _spriteBatch.DrawString(
+                    _font,
+                    sceneDescriptor.Name,
+                    new Vector2(48 + 100*i, GraphicsDevice.Viewport.Height - 48),
+                    sceneDescriptor == _sceneDescriptors.GetCurrent() ? Color.Black :  Color.White);
+                i++;
+            }
+            
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
