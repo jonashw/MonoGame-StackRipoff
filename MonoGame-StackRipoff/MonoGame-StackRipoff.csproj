@@ -63,6 +63,7 @@
     <Compile Include="RectangularRingHalo.cs" />
     <Compile Include="SceneColors.cs" />
     <Compile Include="Size3.cs" />
+    <Compile Include="SpriteDissipator.cs" />
     <Compile Include="Stack.cs" />
   </ItemGroup>
   <ItemGroup>
