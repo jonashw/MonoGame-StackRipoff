@@ -24,7 +24,7 @@ namespace VisualTests
         private readonly CircularArray<SceneDescriptor> _sceneDescriptors = new CircularArray<SceneDescriptor>(
             new []
             {
-                new SceneDescriptor("Play Button", (g,c) => new PlayButtonScene(g,c)), 
+                new SceneDescriptor("Sprite Dissipator", (g,c) => new SpriteDissipatorScene(g,c)), 
                 new SceneDescriptor("Particles", (g,c) => new ParticlesScene(g,c)), 
                 new SceneDescriptor("Bursts", (g,c) => new BurstScene(g)), 
                 new SceneDescriptor("Text Test", (g,c) => new TextScene(g,c)), 

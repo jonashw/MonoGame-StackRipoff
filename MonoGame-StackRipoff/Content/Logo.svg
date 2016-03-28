@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="622.85712"
+   height="445.71429"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.5 r10040"
+   sodipodi:docname="Logo.svg">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient3770">
+      <stop
+         style="stop-color:#00cdcd;stop-opacity:1;"
+         offset="0"
+         id="stop3772" />
+      <stop
+         style="stop-color:#00cd44;stop-opacity:0.24324325;"
+         offset="1"
+         id="stop3774" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3770"
+       id="linearGradient3776"
+       x1="440.42651"
+       y1="188.37935"
+       x2="440.42651"
+       y2="519.20996"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3770"
+       id="linearGradient3779"
+       gradientUnits="userSpaceOnUse"
+       x1="440.42651"
+       y1="188.37935"
+       x2="440.42651"
+       y2="519.20996" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="-13.169929"
+     inkscape:cy="407.08282"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:snap-object-midpoints="true"
+     inkscape:snap-center="true"
+     inkscape:window-width="1920"
+     inkscape:window-height="1018"
+     inkscape:window-x="1912"
+     inkscape:window-y="1072"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Background"
+     transform="translate(-5.0000005,-63.790752)"
+     style="display:none">
+    <rect
+       style="color:#000000;fill:url(#linearGradient3779);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:30;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2985"
+       width="622.85712"
+       height="445.71429"
+       x="5.0000005"
+       y="63.790752" />
+  </g>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-5.0000005,-63.790752)">
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot2987"
+       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:FontAwesome;-inkscape-font-specification:FontAwesome"><flowRegion
+         id="flowRegion2989"><rect
+           id="rect2991"
+           width="500"
+           height="197.14285"
+           x="142.85715"
+           y="220.93361"
+           style="fill:#ffffff" /></flowRegion><flowPara
+         id="flowPara2993"
+         style="fill:#ffffff;font-family:Footlight MT Light;-inkscape-font-specification:Footlight MT Light">STACK</flowPara></flowRoot>    <g
+       id="logo">
+      <text
+         sodipodi:linespacing="50%"
+         id="text2995"
+         y="299.76874"
+         x="316.95932"
+         style="font-size:144.93304443px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:50%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Century Gothic;-inkscape-font-specification:Century Gothic"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:114.99999762%;text-anchor:middle;fill:#ffffff;stroke:none;font-family:Century Gothic;-inkscape-font-specification:Century Gothic"
+           y="299.76874"
+           x="316.95932"
+           id="tspan2997"
+           sodipodi:role="line">STACK</tspan><tspan
+           id="tspan3767"
+           style="font-size:83.04498291px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:50%;text-anchor:middle;fill:#ffffff;stroke:none;font-family:Century Gothic;-inkscape-font-specification:Century Gothic"
+           y="378.74503"
+           x="316.95932"
+           sodipodi:role="line">RIPOFF</tspan></text>
+    </g>
+  </g>
+</svg>
